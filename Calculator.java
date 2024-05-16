@@ -36,11 +36,18 @@ public class Calculator {
         String operator = parts[1];
         String operand2 = parts[2];
 
-        int num1 = romanToArabic(operand1);
-        int num2 = romanToArabic(operand2);
+        boolean isRoman = isRomanNumeral(operand1) && isRomanNumeral(operand2);
+        boolean isArabic = isArabicNumeral(operand1) && isArabicNumeral(operand2);
 
-        if (num1 < 1 || num1 > 3999 || num2 < 1 || num2 > 3999) {
-            throw new Exception("Числа должны быть в диапазоне от 1 до 3999");
+        if (!(isRoman || isArabic)) {
+            throw new Exception("Используйте арабские или римские цифры одновременно");
+        }
+
+        int num1 = isRoman ? romanToArabic(operand1) : Integer.parseInt(operand1);
+        int num2 = isRoman ? romanToArabic(operand2) : Integer.parseInt(operand2);
+
+        if (num1 < 1 || num1 > 10 || num2 < 1 || num2 > 10) {
+            throw new Exception("Числа должны быть в диапазоне от 1 до 10");
         }
 
         int result;
@@ -64,7 +71,22 @@ public class Calculator {
                 throw new Exception("Неверный оператор");
         }
 
-        return arabicToRoman(result);
+        if (isRoman) {
+            if (result < 1) {
+                throw new Exception("Результат не может быть меньше I");
+            }
+            return arabicToRoman(result);
+        } else {
+            return String.valueOf(result);
+        }
+    }
+
+    private static boolean isRomanNumeral(String numeral) {
+        return numeral.matches("^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$");
+    }
+
+    private static boolean isArabicNumeral(String numeral) {
+        return numeral.matches("^[1-9]|10$");
     }
 
     private static int romanToArabic(String roman) {
